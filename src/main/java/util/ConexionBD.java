@@ -1,5 +1,9 @@
 package util;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -12,9 +16,19 @@ public class ConexionBD {
     private static Connection conex;
 
     public static Connection creaConexion() throws SQLException {
-        if (conex == null) {
+        if (conex == null || conex.isClosed()) {
             conex = DriverManager.getConnection(URL, USUARIO, CLAVE);
         }
         return conex;
+    }
+
+    public static DataSource getDataSource(int numconex) throws SQLException {
+        HikariConfig hcnf = new HikariConfig();
+        hcnf.setJdbcUrl(URL);
+        hcnf.setUsername(USUARIO);
+        hcnf.setPassword(CLAVE);
+        hcnf.setMaximumPoolSize(numconex);
+
+        return new HikariDataSource(hcnf);
     }
 }
